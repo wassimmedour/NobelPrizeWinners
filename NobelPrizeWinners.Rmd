@@ -1,0 +1,91 @@
+---
+title: "Nobel Prize winners"
+author: "WASSIM MEDOUR"
+date: "9/30/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+nobel_winners <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-14/nobel_winners.csv")
+nobel_winner_all_pubs <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-14/nobel_winner_all_pubs.csv")
+```
+```{r}
+nobel_winners %>%
+  count(category, decade=10*( prize_year%/%10), sort = TRUE) %>% 
+  ggplot(aes(decade,n ,fill = category))+
+   geom_col()
+```
+```{r}
+nobel_winners=nobel_winners %>% mutate(decade=10*( prize_year%/%10))
+```
+
+
+
+
+```{r}
+nobel_winners %>% count(decade,category,gender=coalesce(gender ,laureate_type)) %>% group_by(decade,category) %>% mutate(percent=n/sum(n)) %>% ggplot(aes(decade,n,fill=gender))+geom_col()+facet_wrap(~category)+labs(x="Decade",y="Nombre of Nobel Prize",title = "Nombre of nobel prize par gender and  type per time")
+```
+```{r}
+library(tmap)
+data("World")
+nobelPrize<-rename(nobel_winners,sovereignt=birth_country)
+
+World<-right_join(World,nobelPrize,by="sovereignt")
+
+tmap_mode("view")
+
+  filter(World,category=="Chemistry") %>% tm_shape()+tm_polygons("category",palette = "RdYlBu")
+
+```
+```{r}
+tmap_mode("view")
+
+  filter(World,category=="Economics") %>% tm_shape()+tm_polygons("category",palette = "RdYlBu")
+
+```
+
+```{r}
+tmap_mode("view")
+
+  filter(World,category=="Literature") %>% tm_shape()+tm_polygons("category",palette = "RdYlBu")
+
+```
+  
+```{r}
+tmap_mode("view")
+
+  filter(World,category=="Medicine") %>% tm_shape()+tm_polygons("category",palette = "RdYlBu")
+
+```
+```{r}
+tmap_mode("view")
+
+  filter(World,category=="Peace") %>% tm_shape()+tm_polygons("category",palette = "RdYlBu")
+
+```
+
+```{r}
+tmap_mode("view")
+
+  filter(World,category=="Physics") %>% tm_shape()+tm_polygons("category",palette = "RdYlBu")
+
+```
+```{r}
+ library(RColorBrewer)
+tm1<-tm_shape(filter(World,category=="Physics"))+tm_polygons("category",palette = "RdYlBu")
+tm2<-tm_shape(filter(World,category=="Chemistry"))+tm_polygons("category",palette = "RdYlBu")
+tm3<-filter(World,category=="Peace") %>% tm_shape()+tm_polygons("category",palette = "RdYlBu")
+tm4<-filter(World,category=="Economics") %>% tm_shape()+tm_polygons("category",palette = "RdYlBu")
+tm5<-filter(World,category=="Medicine") %>% tm_shape()+tm_polygons("category",palette = "RdYlBu")
+tm6<-filter(World,category=="Literature") %>% tm_shape()+tm_polygons("category",palette = "RdYlBu")
+tmap_arrange(tm1,tm2,tm3,tm4)
+```
+```{r}
+tmap_arrange(tm5,tm6)
+```
+
